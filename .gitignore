@@ -1,0 +1,19 @@
+# Node dependencies
+node_modules/
+
+# Build outputs & cache
+.rollup.cache/
+build_artifact/
+*.zip
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

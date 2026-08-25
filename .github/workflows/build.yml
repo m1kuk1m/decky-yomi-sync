@@ -1,0 +1,35 @@
+name: CI Build & TypeCheck
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend bundle
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          test -f dist/index.js || { echo "dist/index.js missing!"; exit 1; }
+          test -f plugin.json || { echo "plugin.json missing!"; exit 1; }
+          test -f main.py || { echo "main.py missing!"; exit 1; }

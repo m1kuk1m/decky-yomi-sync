@@ -1,0 +1,46 @@
+name: Release Decky Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend bundle
+        run: npm run build
+
+      - name: Package Decky Plugin Zip
+        run: |
+          mkdir -p build_artifact/decky-yomi-sync
+          cp -r dist main.py py_modules plugin.json package.json README.md LICENSE build_artifact/decky-yomi-sync/
+          cd build_artifact
+          zip -r ../decky-yomi-sync.zip decky-yomi-sync/
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: decky-yomi-sync.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
